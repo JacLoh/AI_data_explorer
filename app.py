@@ -9,8 +9,10 @@ from db.mysql_manager import init_db, insert_prompt, insert_feedback, fetch_prom
 from services.ai_service import answer_question
 from utils.file_handler import parse_file
 
-# === INIT ===
-init_db()
+try:
+    init_db()
+except Exception as e:
+    st.error(f"MySQL connection failed: {e}")
 
 if "dataframes" not in st.session_state:
     st.session_state.dataframes = {}

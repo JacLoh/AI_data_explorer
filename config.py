@@ -5,7 +5,7 @@ load_dotenv()
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "PW_placeholder",  
+    "password": "#mysqlPW1107",  
     "database": "aiexplorer"
 }
 
