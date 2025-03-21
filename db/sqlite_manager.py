@@ -3,12 +3,12 @@ import sqlite3
 # Database file
 DB_FILE = "database.db"
 
-# === DATABASE SETUP ===
+# setting up the database with sqlite
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
-    # Create tables if they don't exist
+    # create table if it doesnt exist in the following schema
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS prompts (
             id TEXT PRIMARY KEY,
@@ -32,7 +32,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# === INSERT FUNCTIONS ===
+
 def insert_prompt(id, filename, question, answer, timestamp):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
@@ -53,7 +53,7 @@ def insert_feedback(id, prompt_id, rating, comment, timestamp):
     conn.commit()
     conn.close()
 
-# === FETCH FUNCTIONS ===
+
 def fetch_prompts(limit=10):
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()

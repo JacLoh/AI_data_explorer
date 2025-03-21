@@ -1,37 +1,31 @@
 #Instructions:
-- Use pip install -r requirements.txt to install everything.
 
+- Use pip install -r requirements.txt to install everything.
 
 #Project structure:
 
 ##AI_Data_Explorer/
- -- app.py //core UI
-    -> uploads files (.csv,.cls,.xlsx)
-    -> Selects files & diplays top N rows
-    -> Takes user qns & send to AI (via SmartDataFrame)
-    -> Send qns to database (SQL)
-    -> Collect user feedback
-    -> Display prompt history
-    
- -- config.py 
-    -> Stores mySQL credentials (host, user, pw and database) and openAI API key
-    
- -- requirements.txt
-    -> Store dependencies
-    
-    
- - db/
- -- /mysql_manager.py //DATABASE LOGIC, manages interaction with mySQL database
-    -> init_db() //creates prompt and feedback tables (if it doesnt exist alr)
-    -> insert_prompt() //saves prompts & AI responses
-    -> insert_feedback() // stores userfeedback
-    -> fetch_prompts() //retrive prompt history 
- 
- - services/ 
- -- /ai_service.py //receive df & a qn then uses PandasAI & openai to return a natural lang answer
- 
- - utils/
- -- file_handler.py //reads file & return a Pandas df
- 
- 
- 
+-- app.py
+-> Core UI
+
+-- config.py
+-> Stores mySQL credentials (host, user, pw and database) and openAI API key
+
+-- requirements.txt
+-> Store dependencies
+
+- db/
+  -- /sqlite_manager.py //DATABASE LOGIC, manages interaction with sqlite database
+
+- services/
+  -- /ai_service.py //receive df & a qn then uses PandasAI & openai to return a natural lang answer
+
+- utils/
+  -- file_handler.py //reads file & return a Pandas df
+
+- streamlit/
+  -- /secrets.toml
+  -> Stores API keys for Streamlit Cloud
+
+- Procfile
+  -> Defines the Railway start command
