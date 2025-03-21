@@ -9,6 +9,8 @@ from db.mysql_manager import init_db, insert_prompt, insert_feedback, fetch_prom
 from services.ai_service import answer_question
 from utils.file_handler import parse_file
 
+PORT = os.getenv("PORT", 8501)
+
 try:
     init_db()
 except Exception as e:
