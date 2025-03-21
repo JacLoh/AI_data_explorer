@@ -1,4 +1,14 @@
-#Instructions:
+AI powered App
+
+- User can upload 1 or more xls/csv files.
+- Displays top N rows of the sheets uploaded where N is a user defined parameter.
+- User can select which sheet/ file to see the top n rows of.
+- Answers prompts, by retrieving data from the CSVs/ Excels.
+- Users can ask questions for any of the sheets/ CSVs
+- Keeps a history of prompts that users can re-use when needed.
+- Feedback feature to get feedback from the user
+
+  #Instructions:
 
 - Use pip install -r requirements.txt to install everything.
 
