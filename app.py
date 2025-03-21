@@ -1,5 +1,5 @@
 # app.py
-
+import os
 import streamlit as st
 import pandas as pd
 import uuid
@@ -8,6 +8,7 @@ from config import DB_CONFIG
 from db.mysql_manager import init_db, insert_prompt, insert_feedback, fetch_prompts
 from services.ai_service import answer_question
 from utils.file_handler import parse_file
+
 
 PORT = os.getenv("PORT", 8501)
 
