@@ -3,3 +3,5 @@ pandas
 openai
 pandasai
 mysql-connector-python
+python-dotenv
+pyyaml
