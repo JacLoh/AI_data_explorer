@@ -1,55 +1,63 @@
-import mysql.connector
-from config import DB_CONFIG
+import sqlite3
 
-def get_connection():
-    return mysql.connector.connect(**DB_CONFIG)
+# Database file
+DB_FILE = "database.db"
 
+# === DATABASE SETUP ===
 def init_db():
-    conn = get_connection()
+    conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
+
+    # Create tables if they don't exist
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS prompts (
-            id VARCHAR(255) PRIMARY KEY,
+            id TEXT PRIMARY KEY,
             filename TEXT,
             question TEXT,
             answer TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS feedback (
-            id VARCHAR(255) PRIMARY KEY,
-            prompt_id VARCHAR(255),
+            id TEXT PRIMARY KEY,
+            prompt_id TEXT,
             rating TEXT,
             comment TEXT,
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
     conn.commit()
     conn.close()
 
+# === INSERT FUNCTIONS ===
 def insert_prompt(id, filename, question, answer, timestamp):
-    conn = get_connection()
+    conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO prompts (id, filename, question, answer, timestamp) VALUES (%s, %s, %s, %s, %s)",
-        (id, filename, question, answer, timestamp))
+        "INSERT INTO prompts (id, filename, question, answer, timestamp) VALUES (?, ?, ?, ?, ?)",
+        (id, filename, question, answer, timestamp)
+    )
     conn.commit()
     conn.close()
 
 def insert_feedback(id, prompt_id, rating, comment, timestamp):
-    conn = get_connection()
+    conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO feedback (id, prompt_id, rating, comment, timestamp) VALUES (%s, %s, %s, %s, %s)",
-        (id, prompt_id, rating, comment, timestamp))
+        "INSERT INTO feedback (id, prompt_id, rating, comment, timestamp) VALUES (?, ?, ?, ?, ?)",
+        (id, prompt_id, rating, comment, timestamp)
+    )
     conn.commit()
     conn.close()
 
+# === FETCH FUNCTIONS ===
 def fetch_prompts(limit=10):
-    conn = get_connection()
+    conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
-    cursor.execute("SELECT filename, question, answer, timestamp FROM prompts ORDER BY timestamp DESC LIMIT %s", (limit,))
+    cursor.execute("SELECT filename, question, answer, timestamp FROM prompts ORDER BY timestamp DESC LIMIT ?", (limit,))
     results = cursor.fetchall()
     conn.close()
     return results

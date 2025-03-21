@@ -1,34 +1,39 @@
-# app.py
 import os
 import streamlit as st
 import pandas as pd
 import uuid
+import openai
 from datetime import datetime
-from config import DB_CONFIG
-from db.mysql_manager import init_db, insert_prompt, insert_feedback, fetch_prompts
-from services.ai_service import answer_question
-from utils.file_handler import parse_file
+from db.sqlite_manager import init_db, insert_prompt, insert_feedback, fetch_prompts
+from pandasai import SmartDataframe
+from pandasai.llm.openai import OpenAI
 
+# === SETUP ===
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
-PORT = os.getenv("PORT", 8501)
-
+# Initialize the database
 try:
     init_db()
 except Exception as e:
-    st.error(f"MySQL connection failed: {e}")
+    st.error(f"Database init failed: {e}")
 
+# === SESSION STATE ===
 if "dataframes" not in st.session_state:
     st.session_state.dataframes = {}
 if "selected_file" not in st.session_state:
     st.session_state.selected_file = None
 
+# === TITLE ===
 st.title("📊 AI-Powered CSV/XLS Data Explorer")
 
 # === FILE UPLOAD ===
 uploaded_files = st.file_uploader("Upload CSV or XLS files", type=["csv", "xls", "xlsx"], accept_multiple_files=True)
 if uploaded_files:
     for uploaded_file in uploaded_files:
-        df = parse_file(uploaded_file)
+        if uploaded_file.name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file)
+        else:
+            df = pd.read_excel(uploaded_file)
         st.session_state.dataframes[uploaded_file.name] = df
     st.success("Files uploaded successfully!")
 
@@ -40,20 +45,26 @@ if st.session_state.dataframes:
 
     df = st.session_state.dataframes[selected_file]
 
+    # Display top N rows
     n = st.number_input("Show top N rows", min_value=1, value=5)
     st.dataframe(df.head(n))
 
-    # === Ask Question ===
+    # AI Question Answering
     st.subheader("💬 Ask a question about this data")
     question = st.text_input("Enter your question")
     if st.button("Get Answer") and question:
+        llm = OpenAI(api_token=openai.api_key)
+        sdf = SmartDataframe(df, config={"llm": llm})
+
         try:
-            answer = answer_question(df, question)
+            answer = sdf.chat(question)
             st.write("### 🤖 Answer:", answer)
 
+            # Save to database
             prompt_id = str(uuid.uuid4())
             insert_prompt(prompt_id, selected_file, question, str(answer), datetime.now())
 
+            # Feedback section
             st.markdown("---")
             st.subheader("📝 Was this answer helpful?")
             rating = st.radio("", ["👍 Yes", "👎 No"], horizontal=True)
